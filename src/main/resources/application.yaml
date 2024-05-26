@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: simple_bank
+  datasource:
+    url: jdbc:postgresql://localhost:5432/simple_bank
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:liquibase/db.changelog.yaml
+    enabled: true
+    default-schema: public
+#  jpa:
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+        max-page-size: 100
+        default-page-size: 1
+      sort:
+        sort-parameter: id
+
+security:
+  jwt:
+    secret: Y3NkY3NkY3NkbGNtY3NkbGNzZGNkZ3Z4YXNmeGE1c3Rqd3hxdzd4aDdoeA==
+    access: 5 # 5 hours
+
+springdoc:
+  override-with-generic-response: false
