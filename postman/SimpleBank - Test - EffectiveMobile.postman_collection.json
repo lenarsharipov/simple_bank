@@ -1,0 +1,544 @@
+{
+	"info": {
+		"_postman_id": "1eaca606-1e7f-42c5-b4b0-c1eef9f3ba41",
+		"name": "SimpleBank - Test - EffectiveMobile",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27060076"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "01. create valid user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"test\",\r\n    \"password\":\"P4ssword\",\r\n    \"fullName\":\"Ivan\",\r\n    \"birthDate\":\"2000-01-01\",\r\n    \"email\":\"test@gmail.com\",\r\n    \"phone\":\"2291803\",\r\n    \"initialBalance\":100 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/auth/register",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"test\",\r\n    \"password\":\"P4ssword\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/auth/login",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create 2nd valid user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"test2\",\r\n    \"password\":\"P4ssword\",\r\n    \"fullName\":\"Дмитрий Дмитриевич Дмитриев\",\r\n    \"birthDate\":\"2000-01-01\",\r\n    \"email\":\"test2@gmail.com\",\r\n    \"phone\":\"3333333\",\r\n    \"initialBalance\":100 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/auth/register",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create 3rd user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"test3\",\r\n    \"password\":\"P4ssword\",\r\n    \"fullName\":\"Елена Александровна Петрова\",\r\n    \"birthDate\":\"2000-01-01\",\r\n    \"email\":\"test3@gmail.com\",\r\n    \"phone\":\"4444444\",\r\n    \"initialBalance\":100 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/auth/register",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "add phone",
+			"item": [
+				{
+					"name": "01. add phone then ok",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\":\"4444444\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/users/2/phones",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"phones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02. add phone to invalid user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\":\"4444444\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/users/0/phones",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"0",
+								"phones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02. add phone to invalid user Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\":\"3333333\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/users/1/phones",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"phones"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "update phone",
+			"item": [
+				{
+					"name": "01. Update phone of valid user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\":\"4444444\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/users/1/phones/2",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"phones",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "delete phone",
+			"item": [
+				{
+					"name": "delete phone",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhostBank}}/users/1/phones/3",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"phones",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "email operations",
+			"item": [
+				{
+					"name": "add new email",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"test4@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/users/2/emails",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"emails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update email",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"test2UPD@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/users/1/emails/3",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"emails",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete email",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhostBank}}/users/1/emails/3",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"emails",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "search",
+			"item": [
+				{
+					"name": "Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhostBank}}/users/search?page=1&&size=3&sort=scsdcscd",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "size",
+									"value": "3"
+								},
+								{
+									"key": "sort",
+									"value": "scsdcscd"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transfer",
+			"item": [
+				{
+					"name": "transfer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\":300,\r\n    \"receiverUserId\":4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhostBank}}/users/1/transfer",
+							"host": [
+								"{{localhostBank}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"transfer"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "localhostBank",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwtToken",
+			"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ0ZXN0IiwiaWQiOjEsImV4cCI6MTcxNjU0NjE3NX0.U0fmt54sbDrxd87u4pGgQOtqdLr2IcOk7rHUFhfL_QXjYwiFHwQJwv0p1zEXe6xp",
+			"type": "string"
+		}
+	]
+}
