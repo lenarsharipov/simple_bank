@@ -19,6 +19,7 @@ import com.lenarsharipov.simplebank.model.Phone;
 import com.lenarsharipov.simplebank.model.User;
 import com.lenarsharipov.simplebank.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,6 +39,7 @@ public class UserService {
 
     public static final String INCREASE_PERCENTAGE_STEP = "1.05";
     public static final String MAX_VALUE_IN_SCHEDULED_INCREASE = "3.07";
+    public static final int MAX_TRANSFER_ATTEMPTS = 20;
 
     private final UserRepository userRepository;
 
@@ -49,10 +51,12 @@ public class UserService {
 
     @Scheduled(fixedRate = 60_000)
     @Transactional
+    @SneakyThrows
     public void increaseBalances() {
         List<User> users = userRepository.findAll();
         for (var user : users) {
-            boolean isUpdated =false;
+            boolean isUpdated = false;
+            int attempts = 0;
             while (!isUpdated) {
                 try {
                     BigDecimal maxBalance = user.getAccount()
@@ -68,15 +72,21 @@ public class UserService {
                     userRepository.save(user);
                     isUpdated = true;
                 } catch (ObjectOptimisticLockingFailureException e) {
+                    if (attempts == MAX_TRANSFER_ATTEMPTS) {
+                        throw new Exception();
+                    }
                     user = getById(user.getId());
+                    attempts++;
                 }
             }
         }
     }
 
     @Transactional
+    @SneakyThrows
     public void transfer(Long senderUserId,
                          TransferDto dto) {
+        int attempts = 0;
         boolean isUpdated = false;
         User sender = getById(senderUserId);
         User receiver = getById(dto.receiverUserId());
@@ -91,8 +101,12 @@ public class UserService {
                 userRepository.saveAll(List.of(sender, receiver));
                 isUpdated = true;
             } catch (ObjectOptimisticLockingFailureException e) {
+                if (attempts == MAX_TRANSFER_ATTEMPTS) {
+                    throw new Exception();
+                }
                 sender = getById(sender.getId());
                 receiver = getById(receiver.getId());
+                attempts++;
             }
         }
     }
