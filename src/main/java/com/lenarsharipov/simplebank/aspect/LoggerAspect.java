@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggerAspect {
 
-    @Around("execution(* com.lenarsharipov.simplebank..*.*(..))")
+//    @Around("execution(* com.lenarsharipov.simplebank..*.*(..))")
+    @Around("execution(* com.lenarsharipov.simplebank..*.*(..)) && !within(com.lenarsharipov.simplebank.exception.ControllerAdvice)")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("{} method execution start", joinPoint.getSignature().toString());
         Object returnObj = joinPoint.proceed();
