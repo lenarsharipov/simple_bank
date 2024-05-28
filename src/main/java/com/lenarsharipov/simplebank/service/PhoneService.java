@@ -26,7 +26,7 @@ public class PhoneService {
                         CreatePhoneDto dto) {
         Phone phone = getById(phoneId);
         phone.setNumber(dto.getPhone());
-        return phoneRepository.save(phone);
+        return phone;
     }
 
     @Transactional

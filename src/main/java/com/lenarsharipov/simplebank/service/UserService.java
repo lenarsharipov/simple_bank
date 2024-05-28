@@ -138,7 +138,6 @@ public class UserService {
         User user = getById(userId);
         Phone phone = phoneService.create(dto.getPhone());
         user.addPhone(phone);
-        userRepository.save(user);
         return PhoneMapper.toDto(phone);
     }
 
@@ -149,7 +148,6 @@ public class UserService {
         User user = getById(userId);
         Phone phone = phoneService.update(phoneId, dto);
         user.updatePhone(phone);
-        userRepository.save(user);
         return PhoneMapper.toDto(phone);
     }
 
@@ -163,7 +161,6 @@ public class UserService {
         }
         user.deletePhone(phoneService.getById(phoneId));
         phoneService.delete(phoneId);
-        userRepository.save(user);
     }
 
     public User getByUsername(String username) {
@@ -179,7 +176,6 @@ public class UserService {
         User user = getById(userId);
         Email email = emailService.create(dto.getEmail());
         user.addEmail(email);
-        userRepository.save(user);
         return EmailMapper.toDto(email);
     }
 
@@ -190,7 +186,6 @@ public class UserService {
         User user = getById(userId);
         Email email = emailService.update(emailId, dto);
         user.updateEmail(email);
-        userRepository.save(user);
         return EmailMapper.toDto(email);
     }
 
@@ -204,7 +199,6 @@ public class UserService {
         }
         user.deleteEmail(emailService.getById(emailId));
         emailService.delete(emailId);
-        userRepository.save(user);
     }
 
     public boolean isPhoneOwner(Long userId,

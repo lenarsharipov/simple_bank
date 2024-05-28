@@ -26,7 +26,7 @@ public class EmailService {
                         CreateEmailDto dto) {
         Email email = getById(emailId);
         email.setAddress(dto.getEmail());
-        return emailRepository.save(email);
+        return email;
     }
 
     @Transactional
