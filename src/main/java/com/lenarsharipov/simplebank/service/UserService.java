@@ -55,28 +55,26 @@ public class UserService {
     public void increaseBalances() {
         List<User> users = userRepository.findAll();
         for (var user : users) {
+            BigDecimal maxPossibleBalance = user.getAccount()
+                    .getInitialDeposit()
+                    .multiply(new BigDecimal(MAX_VALUE_IN_SCHEDULED_INCREASE));
+            BigDecimal currBalance = user.getAccount().getBalance();
             boolean isUpdated = false;
             int attempts = 0;
-            while (!isUpdated) {
-                try {
-                    BigDecimal maxBalance = user.getAccount()
-                            .getInitialDeposit()
-                            .multiply(new BigDecimal(MAX_VALUE_IN_SCHEDULED_INCREASE));
-                    BigDecimal newBalance = user.getAccount()
-                            .getBalance()
-                            .multiply(new BigDecimal(INCREASE_PERCENTAGE_STEP));
-                    if (newBalance.compareTo(maxBalance) > 0) {
-                        newBalance = maxBalance;
+            if (currBalance.compareTo(maxPossibleBalance) < 0) {
+                while (!isUpdated) {
+                    try {
+                        currBalance = currBalance
+                                .multiply(new BigDecimal(INCREASE_PERCENTAGE_STEP));
+                        user.getAccount().setBalance(currBalance);
+                        isUpdated = true;
+                    } catch (ObjectOptimisticLockingFailureException e) {
+                        if (attempts == MAX_TRANSFER_ATTEMPTS) {
+                            throw new Exception();
+                        }
+                        user = getById(user.getId());
+                        attempts++;
                     }
-                    user.getAccount().setBalance(newBalance);
-                    userRepository.save(user);
-                    isUpdated = true;
-                } catch (ObjectOptimisticLockingFailureException e) {
-                    if (attempts == MAX_TRANSFER_ATTEMPTS) {
-                        throw new Exception();
-                    }
-                    user = getById(user.getId());
-                    attempts++;
                 }
             }
         }
@@ -97,7 +95,6 @@ public class UserService {
             try {
                 decreaseBalance(sender, dto.amount());
                 increaseBalance(receiver, dto.amount());
-                userRepository.saveAll(List.of(sender, receiver));
                 isUpdated = true;
             } catch (ObjectOptimisticLockingFailureException e) {
                 if (attempts == MAX_TRANSFER_ATTEMPTS) {
