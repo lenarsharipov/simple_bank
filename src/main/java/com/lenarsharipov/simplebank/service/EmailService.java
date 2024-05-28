@@ -1,6 +1,7 @@
 package com.lenarsharipov.simplebank.service;
 
 import com.lenarsharipov.simplebank.dto.email.CreateEmailDto;
+import com.lenarsharipov.simplebank.dto.email.CreatedEmailDto;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import com.lenarsharipov.simplebank.mapper.EmailMapper;
 import com.lenarsharipov.simplebank.model.Email;
@@ -22,11 +23,11 @@ public class EmailService {
     }
 
     @Transactional
-    public Email update(Long emailId,
-                        CreateEmailDto dto) {
+    public CreatedEmailDto update(Long emailId,
+                                  CreateEmailDto dto) {
         Email email = getById(emailId);
         email.setAddress(dto.getEmail());
-        return email;
+        return EmailMapper.toDto(email);
     }
 
     @Transactional

@@ -44,7 +44,7 @@ public class UserController {
     public CreatedPhoneDto updatePhone(@PathVariable Long userId,
                                        @PathVariable Long phoneId,
                                        @Valid @RequestBody CreatePhoneDto dto) {
-        return userService.updatePhone(userId, phoneId, dto);
+        return userService.updatePhone(phoneId, dto);
     }
 
     @DeleteMapping("/{userId}/phones/{phoneId}")
@@ -74,7 +74,7 @@ public class UserController {
     public CreatedEmailDto updateEmail(@PathVariable Long userId,
                                        @PathVariable Long emailId,
                                        @Valid @RequestBody CreateEmailDto dto) {
-        return userService.updateEmail(userId, emailId, dto);
+        return userService.updateEmail(emailId, dto);
     }
 
     @DeleteMapping("/{userId}/emails/{emailId}")

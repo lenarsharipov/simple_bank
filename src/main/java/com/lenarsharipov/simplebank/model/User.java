@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -52,28 +51,6 @@ public class User {
 
     public void addPhone(Phone phone) {
         this.phones.add(phone);
-    }
-
-    public void updatePhone(Phone phone) {
-        phones.stream()
-                .filter(p -> Objects.equals(p.getId(), phone.getId()))
-                .findFirst()
-                .ifPresent(p -> p = phone);
-    }
-
-    public void updateEmail(Email email) {
-        emails.stream()
-                .filter(p -> Objects.equals(p.getId(), email.getId()))
-                .findFirst()
-                .ifPresent(e -> e = email);
-    }
-
-    public void deletePhone(Phone phone) {
-        phones.remove(phone);
-    }
-
-    public void deleteEmail(Email email) {
-        emails.remove(email);
     }
 
     public boolean hasPhone(Phone phone) {

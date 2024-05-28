@@ -142,13 +142,9 @@ public class UserService {
     }
 
     @Transactional
-    public CreatedPhoneDto updatePhone(Long userId,
-                                       Long phoneId,
+    public CreatedPhoneDto updatePhone(Long phoneId,
                                        CreatePhoneDto dto) {
-        User user = getById(userId);
-        Phone phone = phoneService.update(phoneId, dto);
-        user.updatePhone(phone);
-        return PhoneMapper.toDto(phone);
+        return phoneService.update(phoneId, dto);
     }
 
     @Transactional
@@ -159,7 +155,6 @@ public class UserService {
             throw new IllegalUserStateException(
                     "User must have at least 1 phone");
         }
-        user.deletePhone(phoneService.getById(phoneId));
         phoneService.delete(phoneId);
     }
 
@@ -180,13 +175,9 @@ public class UserService {
     }
 
     @Transactional
-    public CreatedEmailDto updateEmail(Long userId,
-                                       Long emailId,
+    public CreatedEmailDto updateEmail(Long emailId,
                                        CreateEmailDto dto) {
-        User user = getById(userId);
-        Email email = emailService.update(emailId, dto);
-        user.updateEmail(email);
-        return EmailMapper.toDto(email);
+        return emailService.update(emailId, dto);
     }
 
     @Transactional
@@ -197,7 +188,6 @@ public class UserService {
             throw new IllegalUserStateException(
                     "User must have at least 1 email");
         }
-        user.deleteEmail(emailService.getById(emailId));
         emailService.delete(emailId);
     }
 
