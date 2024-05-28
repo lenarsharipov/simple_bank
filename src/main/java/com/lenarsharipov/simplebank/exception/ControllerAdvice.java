@@ -82,10 +82,15 @@ public class ControllerAdvice {
         return new ExceptionBody("Access denied.");
     }
 
+    @ExceptionHandler(UnableToTransferException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionBody handleUnableTransferException(UnableToTransferException e) {
+        return new ExceptionBody(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionBody handleException(Exception e) {
-        e.printStackTrace();
         return new ExceptionBody("Internal error.");
     }
 }

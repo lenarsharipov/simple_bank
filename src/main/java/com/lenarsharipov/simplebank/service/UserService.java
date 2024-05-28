@@ -12,6 +12,7 @@ import com.lenarsharipov.simplebank.dto.user.PageUserDto;
 import com.lenarsharipov.simplebank.exception.IllegalUserStateException;
 import com.lenarsharipov.simplebank.exception.InsufficientFundsException;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
+import com.lenarsharipov.simplebank.exception.UnableToTransferException;
 import com.lenarsharipov.simplebank.mapper.*;
 import com.lenarsharipov.simplebank.model.Account;
 import com.lenarsharipov.simplebank.model.Email;
@@ -73,7 +74,8 @@ public class UserService {
                         isUpdated = true;
                     } catch (ObjectOptimisticLockingFailureException e) {
                         if (attempts == MAX_TRANSFER_ATTEMPTS) {
-                            throw new Exception();
+                            throw new UnableToTransferException(
+                                    "Unable to proceed transfer operation");
                         }
                         user = getById(user.getId());
                         attempts++;
@@ -101,7 +103,8 @@ public class UserService {
                 isUpdated = true;
             } catch (ObjectOptimisticLockingFailureException e) {
                 if (attempts == MAX_TRANSFER_ATTEMPTS) {
-                    throw new Exception();
+                    throw new UnableToTransferException(
+                            "Unable to proceed transfer operation");
                 }
                 sender = getById(sender.getId());
                 receiver = getById(receiver.getId());
