@@ -93,11 +93,10 @@ public class UserService {
         if (sender.getAccount().getBalance().compareTo(dto.amount()) < 0) {
             throw new InsufficientFundsException("Insufficient funds");
         }
-
         while (!isUpdated) {
             try {
-                sender.decreaseBalance(dto.amount());
-                receiver.increaseBalance(dto.amount());
+                decreaseBalance(sender, dto.amount());
+                increaseBalance(receiver, dto.amount());
                 userRepository.saveAll(List.of(sender, receiver));
                 isUpdated = true;
             } catch (ObjectOptimisticLockingFailureException e) {
@@ -109,6 +108,18 @@ public class UserService {
                 attempts++;
             }
         }
+    }
+
+    private void increaseBalance(User user, BigDecimal amount) {
+        BigDecimal balance = user.getAccount().getBalance();
+        balance = balance.add(amount);
+        user.getAccount().setBalance(balance);
+    }
+
+    private void decreaseBalance(User user, BigDecimal amount) {
+        BigDecimal balance = user.getAccount().getBalance();
+        balance = balance.subtract(amount);
+        user.getAccount().setBalance(balance);
     }
 
     public User getById(Long userId) {
@@ -126,8 +137,8 @@ public class UserService {
         user.setAccount(account);
         Email email = emailService.create(dto.getEmail());
         Phone phone = phoneService.create(dto.getPhone());
-        user.addEmail(email);
-        user.addPhone(phone);
+        user.getEmails().add(email);
+        user.getPhones().add(phone);
         userRepository.save(user);
         return UserMapper.toCreatedUserDto(user);
     }
@@ -137,7 +148,7 @@ public class UserService {
                                     CreatePhoneDto dto) {
         User user = getById(userId);
         Phone phone = phoneService.create(dto.getPhone());
-        user.addPhone(phone);
+        user.getPhones().add(phone);
         return PhoneMapper.toDto(phone);
     }
 
@@ -170,7 +181,7 @@ public class UserService {
                                     CreateEmailDto dto) {
         User user = getById(userId);
         Email email = emailService.create(dto.getEmail());
-        user.addEmail(email);
+        user.getEmails().add(email);
         return EmailMapper.toDto(email);
     }
 
@@ -195,14 +206,14 @@ public class UserService {
                                 Long phoneId) {
         User user = getById(userId);
         Phone phone = phoneService.getById(phoneId);
-        return user.hasPhone(phone);
+        return user.getPhones().contains(phone);
     }
 
     public boolean isEmailOwner(Long userId,
                                 Long emailId) {
         User user = getById(userId);
         Email email = emailService.getById(emailId);
-        return user.hasEmail(email);
+        return user.getEmails().contains(email);
     }
 
     public PageUserDto search(FiltersDto filters,

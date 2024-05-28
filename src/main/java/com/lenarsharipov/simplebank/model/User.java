@@ -3,7 +3,6 @@ package com.lenarsharipov.simplebank.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,32 +43,4 @@ public class User {
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<Phone> phones = new ArrayList<>();
-
-    public void addEmail(Email email) {
-        this.emails.add(email);
-    }
-
-    public void addPhone(Phone phone) {
-        this.phones.add(phone);
-    }
-
-    public boolean hasPhone(Phone phone) {
-        return phones.contains(phone);
-    }
-
-    public boolean hasEmail(Email email) {
-        return emails.contains(email);
-    }
-
-    public void increaseBalance(BigDecimal amount) {
-        BigDecimal balance = this.account.getBalance();
-        balance = balance.add(amount);
-        this.account.setBalance(balance);
-    }
-
-    public void decreaseBalance(BigDecimal amount) {
-        BigDecimal balance = this.account.getBalance();
-        balance = balance.subtract(amount);
-        this.account.setBalance(balance);
-    }
 }
