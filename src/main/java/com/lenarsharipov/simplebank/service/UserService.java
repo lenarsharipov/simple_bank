@@ -59,13 +59,16 @@ public class UserService {
                     .getInitialDeposit()
                     .multiply(new BigDecimal(MAX_VALUE_IN_SCHEDULED_INCREASE));
             BigDecimal currBalance = user.getAccount().getBalance();
+            BigDecimal increased = currBalance
+                    .multiply(new BigDecimal(INCREASE_PERCENTAGE_STEP));
             boolean isUpdated = false;
             int attempts = 0;
             if (currBalance.compareTo(maxPossibleBalance) < 0) {
                 while (!isUpdated) {
                     try {
-                        currBalance = currBalance
-                                .multiply(new BigDecimal(INCREASE_PERCENTAGE_STEP));
+                        currBalance = increased.compareTo(maxPossibleBalance) > 0
+                                ? maxPossibleBalance
+                                : increased;
                         user.getAccount().setBalance(currBalance);
                         isUpdated = true;
                     } catch (ObjectOptimisticLockingFailureException e) {
