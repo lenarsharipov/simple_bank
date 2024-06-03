@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Data
@@ -31,16 +32,16 @@ public class User {
 
     private LocalDate birthDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = PERSIST)
     private Account account;
 
     @Builder.Default
-    @OneToMany
+    @OneToMany(cascade = {PERSIST})
     @JoinColumn(name = "user_id")
     private List<Email> emails = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany
+    @OneToMany(cascade = {PERSIST})
     @JoinColumn(name = "user_id")
     private List<Phone> phones = new ArrayList<>();
 }

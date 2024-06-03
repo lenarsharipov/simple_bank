@@ -18,6 +18,8 @@ import com.lenarsharipov.simplebank.model.Account;
 import com.lenarsharipov.simplebank.model.Email;
 import com.lenarsharipov.simplebank.model.Phone;
 import com.lenarsharipov.simplebank.model.User;
+import com.lenarsharipov.simplebank.repository.EmailRepository;
+import com.lenarsharipov.simplebank.repository.PhoneRepository;
 import com.lenarsharipov.simplebank.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -43,10 +46,8 @@ public class UserService {
     public static final int MAX_TRANSFER_ATTEMPTS = 20;
 
     private final UserRepository userRepository;
-
-    private final AccountService accountService;
-    private final EmailService emailService;
-    private final PhoneService phoneService;
+    private final EmailRepository emailRepository;
+    private final PhoneRepository phoneRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -136,10 +137,13 @@ public class UserService {
     public CreatedUserDto create(CreateUserDto dto) {
         User user = UserMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        Account account = accountService.create(dto.getInitialBalance());
+        Account account = Account.builder()
+                .initialDeposit(dto.getInitialBalance())
+                .balance(dto.getInitialBalance())
+                .build();
         user.setAccount(account);
-        Email email = emailService.create(dto.getEmail());
-        Phone phone = phoneService.create(dto.getPhone());
+        Email email = new Email(null, dto.getEmail());
+        Phone phone = new Phone(null, dto.getPhone());
         user.getEmails().add(email);
         user.getPhones().add(phone);
         userRepository.save(user);
@@ -150,15 +154,19 @@ public class UserService {
     public CreatedPhoneDto addPhone(Long userId,
                                     CreatePhoneDto dto) {
         User user = getById(userId);
-        Phone phone = phoneService.create(dto.getPhone());
+        Phone phone = new Phone(null, dto.getPhone());
         user.getPhones().add(phone);
         return PhoneMapper.toDto(phone);
     }
 
     @Transactional
-    public CreatedPhoneDto updatePhone(Long phoneId,
+    public CreatedPhoneDto updatePhone(Long userId,
+                                       Long phoneId,
                                        CreatePhoneDto dto) {
-        return phoneService.update(phoneId, dto);
+        User user = getById(userId);
+        Phone phone = getPhone(phoneId, user);
+        phone.setNumber(dto.getPhone());
+        return PhoneMapper.toDto(phone);
     }
 
     @Transactional
@@ -169,7 +177,24 @@ public class UserService {
             throw new IllegalUserStateException(
                     "User must have at least 1 phone");
         }
-        phoneService.delete(phoneId);
+        Phone phone = getPhone(phoneId, user);
+        user.getPhones().remove(phone);
+        phoneRepository.deleteById(phoneId);
+    }
+
+    private Phone getPhone(Long phoneId, User user) {
+        return user.getPhones().stream()
+                .filter(p -> Objects.equals(p.getId(), phoneId))
+                .findFirst()
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Phone not found"));
+    }
+
+    public boolean isPhoneOwner(Long userId,
+                                Long phoneId) {
+        User user = getById(userId);
+        return user.getPhones().stream()
+                .anyMatch(p -> Objects.equals(p.getId(), phoneId));
     }
 
     public User getByUsername(String username) {
@@ -183,15 +208,19 @@ public class UserService {
     public CreatedEmailDto addEmail(Long userId,
                                     CreateEmailDto dto) {
         User user = getById(userId);
-        Email email = emailService.create(dto.getEmail());
+        Email email = new Email(null, dto.getEmail());
         user.getEmails().add(email);
         return EmailMapper.toDto(email);
     }
 
     @Transactional
-    public CreatedEmailDto updateEmail(Long emailId,
+    public CreatedEmailDto updateEmail(Long userId,
+                                       Long emailId,
                                        CreateEmailDto dto) {
-        return emailService.update(emailId, dto);
+        User user = getById(userId);
+        Email email = getEmail(emailId, user);
+        email.setAddress(dto.getEmail());
+        return EmailMapper.toDto(email);
     }
 
     @Transactional
@@ -202,21 +231,24 @@ public class UserService {
             throw new IllegalUserStateException(
                     "User must have at least 1 email");
         }
-        emailService.delete(emailId);
+        Email email = getEmail(emailId, user);
+        user.getEmails().remove(email);
+        emailRepository.deleteById(emailId);
     }
 
-    public boolean isPhoneOwner(Long userId,
-                                Long phoneId) {
-        User user = getById(userId);
-        Phone phone = phoneService.getById(phoneId);
-        return user.getPhones().contains(phone);
+    private Email getEmail(Long emailId, User user) {
+        return user.getEmails().stream()
+                .filter(e -> Objects.equals(e.getId(), emailId))
+                .findFirst()
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Email not found"));
     }
 
     public boolean isEmailOwner(Long userId,
                                 Long emailId) {
         User user = getById(userId);
-        Email email = emailService.getById(emailId);
-        return user.getEmails().contains(email);
+        return user.getEmails().stream()
+                .anyMatch(email -> Objects.equals(email.getId(), emailId));
     }
 
     public PageUserDto search(FiltersDto filters,
