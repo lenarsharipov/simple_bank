@@ -53,33 +53,36 @@ public class UserService {
 
     @Scheduled(fixedRate = 60_000)
     @Transactional
-    @SneakyThrows
     public void increaseBalances() {
         List<User> users = userRepository.findAll();
         for (var user : users) {
-            BigDecimal maxPossibleBalance = user.getAccount()
-                    .getInitialDeposit()
-                    .multiply(new BigDecimal(MAX_VALUE_IN_SCHEDULED_INCREASE));
-            BigDecimal currBalance = user.getAccount().getBalance();
-            BigDecimal increased = currBalance
-                    .multiply(new BigDecimal(INCREASE_PERCENTAGE_STEP));
-            boolean isUpdated = false;
-            int attempts = 0;
-            if (currBalance.compareTo(maxPossibleBalance) < 0) {
-                while (!isUpdated) {
-                    try {
-                        currBalance = increased.compareTo(maxPossibleBalance) > 0
-                                ? maxPossibleBalance
-                                : increased;
-                        user.getAccount().setBalance(currBalance);
-                        isUpdated = true;
-                    } catch (ObjectOptimisticLockingFailureException e) {
-                        if (attempts == MAX_TRANSFER_ATTEMPTS) {
-                            throw new UnableToTransferException(
-                                    "Unable to proceed transfer operation");
-                        }
-                        user = getById(user.getId());
-                        attempts++;
+            increaseUserBalance(user);
+        }
+    }
+
+    private void increaseUserBalance(User user) {
+        BigDecimal maxPossibleBalance = user.getAccount()
+                .getInitialDeposit()
+                .multiply(new BigDecimal(MAX_VALUE_IN_SCHEDULED_INCREASE));
+        BigDecimal currBalance = user.getAccount().getBalance();
+        BigDecimal increased = currBalance.multiply(new BigDecimal(INCREASE_PERCENTAGE_STEP));
+
+        boolean isUpdated = false;
+        int attempts = 0;
+        if (currBalance.compareTo(maxPossibleBalance) < 0) {
+            while (!isUpdated) {
+                try {
+                    currBalance = increased.compareTo(maxPossibleBalance) > 0
+                            ? maxPossibleBalance
+                            : increased;
+                    user.getAccount().setBalance(currBalance);
+                    isUpdated = true;
+                } catch (ObjectOptimisticLockingFailureException e) {
+                    attempts++;
+                    user = getById(user.getId());
+                    if (attempts == MAX_TRANSFER_ATTEMPTS) {
+                        throw new UnableToTransferException(
+                                "Unable to proceed transfer operation");
                     }
                 }
             }
@@ -87,7 +90,6 @@ public class UserService {
     }
 
     @Transactional
-    @SneakyThrows
     public void transfer(Long senderUserId,
                          TransferDto dto) {
         int attempts = 0;
@@ -103,13 +105,13 @@ public class UserService {
                 increaseBalance(receiver, dto.amount());
                 isUpdated = true;
             } catch (ObjectOptimisticLockingFailureException e) {
+                attempts++;
+                sender = getById(sender.getId());
+                receiver = getById(receiver.getId());
                 if (attempts == MAX_TRANSFER_ATTEMPTS) {
                     throw new UnableToTransferException(
                             "Unable to proceed transfer operation");
                 }
-                sender = getById(sender.getId());
-                receiver = getById(receiver.getId());
-                attempts++;
             }
         }
     }
