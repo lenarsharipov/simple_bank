@@ -23,21 +23,15 @@ public class CustomSecurityExpression {
         return Objects.equals(userId, inContextUserId);
     }
 
-    public boolean canAccessEmail(Long userId, Long emailId) {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-        JwtEntity user = (JwtEntity) authentication.getPrincipal();
-        Long inContextUserId = user.getId();
-        return Objects.equals(userId, inContextUserId)
+    public boolean canAccessEmail(Long userId,
+                                  Long emailId) {
+        return canAccessUser(userId)
                && userService.isEmailOwner(userId, emailId);
     }
 
-    public boolean canAccessPhone(Long userId, Long phoneId) {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-        JwtEntity user = (JwtEntity) authentication.getPrincipal();
-        Long inContextUserId = user.getId();
-        return Objects.equals(userId, inContextUserId)
+    public boolean canAccessPhone(Long userId,
+                                  Long phoneId) {
+        return canAccessUser(userId)
                && userService.isPhoneOwner(userId, phoneId);
     }
 }

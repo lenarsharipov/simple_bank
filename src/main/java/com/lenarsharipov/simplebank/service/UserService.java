@@ -182,7 +182,8 @@ public class UserService {
         phoneRepository.deleteById(phoneId);
     }
 
-    private Phone getPhone(Long phoneId, User user) {
+    private Phone getPhone(Long phoneId,
+                           User user) {
         return user.getPhones().stream()
                 .filter(p -> Objects.equals(p.getId(), phoneId))
                 .findFirst()
@@ -236,7 +237,8 @@ public class UserService {
         emailRepository.deleteById(emailId);
     }
 
-    private Email getEmail(Long emailId, User user) {
+    private Email getEmail(Long emailId,
+                           User user) {
         return user.getEmails().stream()
                 .filter(e -> Objects.equals(e.getId(), emailId))
                 .findFirst()
