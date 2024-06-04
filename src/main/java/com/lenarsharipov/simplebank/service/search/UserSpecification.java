@@ -2,28 +2,21 @@ package com.lenarsharipov.simplebank.service.search;
 
 import com.lenarsharipov.simplebank.model.*;
 import jakarta.persistence.criteria.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 
-@AllArgsConstructor
 @Builder
-@Getter
-@Setter
-public class UserSpecification implements Specification<User> {
-
-    private final String phone;
-    private final String fullName;
-    private final String email;
-    private final LocalDate birthDate;
+public record UserSpecification(String phone,
+                                String fullName,
+                                String email,
+                                LocalDate birthDate) implements Specification<User> {
 
     @Override
-    public Predicate toPredicate(Root<User> root,
-                                 CriteriaQuery<?> query,
+    public Predicate toPredicate(@NonNull Root<User> root,
+                                 @NonNull CriteriaQuery<?> query,
                                  CriteriaBuilder criteriaBuilder) {
         Predicate predicate = criteriaBuilder.conjunction();
         if (phone != null && !phone.isEmpty()) {

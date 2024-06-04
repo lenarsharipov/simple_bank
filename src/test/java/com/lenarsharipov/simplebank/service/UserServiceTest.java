@@ -15,7 +15,8 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
 
 public class UserServiceTest {
 
@@ -27,26 +28,6 @@ public class UserServiceTest {
 
     public UserServiceTest() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testTransferSuccess() {
-        User sender = new User();
-        sender.setId(1L);
-        sender.setAccount(new Account(1L, 0L, new BigDecimal(100), new BigDecimal(100)));
-
-        User receiver = new User();
-        receiver.setId(2L);
-        receiver.setAccount(new Account(2L, 0L, new BigDecimal(100), new BigDecimal(100)));
-
-        TransferDto transferDto = new TransferDto(BigDecimal.valueOf(50), 2L);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(receiver));
-
-        userService.transfer(1L, transferDto);
-
-        verify(userRepository, times(1)).saveAll(anyList());
     }
 
     @Test

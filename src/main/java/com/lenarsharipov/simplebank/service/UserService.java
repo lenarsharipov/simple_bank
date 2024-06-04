@@ -22,7 +22,6 @@ import com.lenarsharipov.simplebank.repository.EmailRepository;
 import com.lenarsharipov.simplebank.repository.PhoneRepository;
 import com.lenarsharipov.simplebank.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
