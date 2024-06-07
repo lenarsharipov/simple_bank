@@ -18,8 +18,6 @@ import com.lenarsharipov.simplebank.model.Account;
 import com.lenarsharipov.simplebank.model.Email;
 import com.lenarsharipov.simplebank.model.Phone;
 import com.lenarsharipov.simplebank.model.User;
-import com.lenarsharipov.simplebank.repository.EmailRepository;
-import com.lenarsharipov.simplebank.repository.PhoneRepository;
 import com.lenarsharipov.simplebank.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,8 +43,6 @@ public class UserService {
     public static final int MAX_TRANSFER_ATTEMPTS = 20;
 
     private final UserRepository userRepository;
-    private final EmailRepository emailRepository;
-    private final PhoneRepository phoneRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -180,7 +176,7 @@ public class UserService {
         }
         Phone phone = getPhone(phoneId, user);
         user.getPhones().remove(phone);
-        phoneRepository.deleteById(phoneId);
+//        phoneRepository.deleteById(phoneId);
     }
 
     private Phone getPhone(Long phoneId,
@@ -235,7 +231,7 @@ public class UserService {
         }
         Email email = getEmail(emailId, user);
         user.getEmails().remove(email);
-        emailRepository.deleteById(emailId);
+//        emailRepository.deleteById(emailId);
     }
 
     private Email getEmail(Long emailId,

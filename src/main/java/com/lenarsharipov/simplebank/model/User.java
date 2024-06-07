@@ -36,12 +36,12 @@ public class User {
     private Account account;
 
     @Builder.Default
-    @OneToMany(cascade = {PERSIST})
+    @OneToMany(cascade = {PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private List<Email> emails = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(cascade = {PERSIST})
+    @OneToMany(cascade = {PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private List<Phone> phones = new ArrayList<>();
 }
