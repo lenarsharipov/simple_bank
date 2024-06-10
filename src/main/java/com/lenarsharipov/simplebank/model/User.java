@@ -3,45 +3,23 @@ package com.lenarsharipov.simplebank.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.GenerationType.IDENTITY;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString(exclude = {"emails", "phones"})
-@EqualsAndHashCode(exclude = {"emails", "phones"})
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
 
     private String password;
 
-    private String fullName;
-
-    private LocalDate birthDate;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = PERSIST)
-    private Account account;
-
-    @Builder.Default
-    @OneToMany(cascade = {PERSIST}, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    private List<Email> emails = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(cascade = {PERSIST}, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    private List<Phone> phones = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

@@ -4,7 +4,7 @@ import com.lenarsharipov.simplebank.dto.account.TransferDto;
 import com.lenarsharipov.simplebank.exception.InsufficientFundsException;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import com.lenarsharipov.simplebank.model.Account;
-import com.lenarsharipov.simplebank.model.User;
+import com.lenarsharipov.simplebank.model.Client;
 import com.lenarsharipov.simplebank.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,25 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
-public class UserServiceTest {
+public class ClientServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserService userService;
+    private ClientService clientService;
 
-    public UserServiceTest() {
+    public ClientServiceTest() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testTransferInsufficientFunds() {
-        User sender = new User();
+        Client sender = new Client();
         sender.setId(1L);
         sender.setAccount(new Account(1L, 0L, new BigDecimal(20), new BigDecimal(20)));
 
-        User receiver = new User();
+        Client receiver = new Client();
         receiver.setId(2L);
         receiver.setAccount(new Account(2L, 0L, new BigDecimal(100), new BigDecimal(100)));
 
@@ -46,7 +46,7 @@ public class UserServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(receiver));
 
         assertThrows(InsufficientFundsException.class,
-                () -> userService.transfer(1L, transferDto));
+                () -> clientService.transfer(1L, transferDto));
     }
 
     @Test
@@ -56,6 +56,6 @@ public class UserServiceTest {
         TransferDto transferDto = new TransferDto(BigDecimal.valueOf(50), 2L);
 
         assertThrows(ResourceNotFoundException.class,
-                () -> userService.transfer(1L, transferDto));
+                () -> clientService.transfer(1L, transferDto));
     }
 }

@@ -86,7 +86,8 @@ public class ApplicationConfig {
                                             response.getWriter().write("Unauthorized.");
                                         }))
                 .authorizeHttpRequests(configurer ->
-                        configurer.requestMatchers("/auth/**")
+//                        configurer.requestMatchers("/auth/**")
+                        configurer.requestMatchers("/auth/login")
                                 .permitAll()
                                 .requestMatchers("/swagger-ui/**")
                                 .permitAll()

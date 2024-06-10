@@ -1,4 +1,4 @@
-package com.lenarsharipov.simplebank.dto.user;
+package com.lenarsharipov.simplebank.dto.client;
 
 import lombok.Builder;
 import lombok.Data;

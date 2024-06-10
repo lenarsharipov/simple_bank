@@ -1,4 +1,4 @@
-package com.lenarsharipov.simplebank.dto.user;
+package com.lenarsharipov.simplebank.dto.client;
 
 import com.lenarsharipov.simplebank.validation.LegalAge;
 import com.lenarsharipov.simplebank.validation.UniqueEmail;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Value
 @Builder
 @Schema(description = "User Dto")
-public class CreateUserDto {
+public class CreateClientDto {
 
     @Schema(description = "username", example = "myUsername")
     @UniqueUsername

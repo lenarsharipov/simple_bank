@@ -1,19 +1,17 @@
 package com.lenarsharipov.simplebank.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-public class Email {
+public class Email extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

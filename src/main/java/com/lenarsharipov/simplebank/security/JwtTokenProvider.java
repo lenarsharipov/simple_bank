@@ -53,7 +53,7 @@ public class JwtTokenProvider {
         String username = getUsername(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(
-                userDetails,  "", userDetails.getAuthorities());
+                userDetails, "", userDetails.getAuthorities());
     }
 
     public boolean isValid(String token) {

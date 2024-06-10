@@ -1,4 +1,4 @@
-package com.lenarsharipov.simplebank.dto.user;
+package com.lenarsharipov.simplebank.dto.client;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class PageUserDto {
+public class PageClientDto {
 
     private List<ReadUserDto> content;
     private int pageNumber;
