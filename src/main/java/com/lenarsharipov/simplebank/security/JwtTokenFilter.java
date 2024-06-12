@@ -1,5 +1,6 @@
 package com.lenarsharipov.simplebank.security;
 
+import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -29,15 +30,15 @@ public class JwtTokenFilter extends GenericFilterBean {
 
         try {
             if (bearerToken != null
-                && jwtTokenProvider.isValid(bearerToken)) {
+                && jwtTokenProvider.validateToken(bearerToken)) {
                 Authentication authentication
                         = jwtTokenProvider.getAuthentication(bearerToken);
                 if (authentication != null) {
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        } catch (Exception ignored) {
+//        } catch (Exception ignored) {
+        } catch (ResourceNotFoundException ignored) {
 
         }
 

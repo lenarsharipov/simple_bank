@@ -2,11 +2,11 @@ package com.lenarsharipov.simplebank.service;
 
 import com.lenarsharipov.simplebank.dto.account.TransferDto;
 import com.lenarsharipov.simplebank.dto.client.CreateClientDto;
-import com.lenarsharipov.simplebank.dto.client.CreatedUserDto;
+import com.lenarsharipov.simplebank.dto.client.CreatedClientDto;
 import com.lenarsharipov.simplebank.dto.client.PageClientDto;
 import com.lenarsharipov.simplebank.dto.email.CreateEmailDto;
 import com.lenarsharipov.simplebank.dto.email.CreatedEmailDto;
-import com.lenarsharipov.simplebank.dto.filter.FiltersDto;
+import com.lenarsharipov.simplebank.dto.filter.ClientFiltersDto;
 import com.lenarsharipov.simplebank.dto.phone.CreatePhoneDto;
 import com.lenarsharipov.simplebank.dto.phone.CreatedPhoneDto;
 import com.lenarsharipov.simplebank.exception.IllegalUserStateException;
@@ -134,7 +134,7 @@ public class ClientService {
     }
 
     @Transactional
-    public CreatedUserDto create(CreateClientDto dto) {
+    public CreatedClientDto create(CreateClientDto dto) {
         Client client = ClientMapper.toEntity(dto);
         User user = UserMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -240,8 +240,8 @@ public class ClientService {
                 .anyMatch(email -> Objects.equals(email.getId(), emailId));
     }
 
-    public boolean isUser(Long clientId,
-                          Long userId) {
+    public boolean isUserOwner(Long clientId,
+                               Long userId) {
         var result = false;
         Optional<Client> optionalClient = clientRepository.findById(clientId);
         if (optionalClient.isPresent()) {
@@ -250,10 +250,10 @@ public class ClientService {
         return result;
     }
 
-    public PageClientDto search(FiltersDto filters,
+    public PageClientDto search(ClientFiltersDto filters,
                                 Pageable pageable) {
-        Specification<Client> spec = UserSpecMapper.toSpecification(filters);
-        Page<Client> userPage = clientRepository.findAll(spec, pageable);
-        return ClientMapper.toPageUserDto(userPage);
+        Specification<Client> specification = ClientSpecMapper.toSpecification(filters);
+        Page<Client> userPage = clientRepository.findAll(specification, pageable);
+        return ClientPageMapper.toPageClientDto(userPage);
     }
 }

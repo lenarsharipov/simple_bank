@@ -27,7 +27,8 @@ spring:
 security:
   jwt:
     secret: Y3NkY3NkY3NkbGNtY3NkbGNzZGNkZ3Z4YXNmeGE1c3Rqd3hxdzd4aDdoeA==
-    access: 5 # 5 hours
+    access: 1 # hours
+    refresh: 10 # days
 
 springdoc:
   override-with-generic-response: false

@@ -4,13 +4,10 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
-public class ReadUserDto {
-
-    private Long id;
+public class CreatedClientDto {
 
     private String username;
 
@@ -18,9 +15,9 @@ public class ReadUserDto {
 
     private LocalDate birthDate;
 
-    private String accountNumber;
+    private String accountNo;
 
-    private List<String> emails;
+    private String email;
 
-    private List<String> phones;
+    private String phone;
 }

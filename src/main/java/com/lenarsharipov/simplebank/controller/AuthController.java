@@ -3,7 +3,7 @@ package com.lenarsharipov.simplebank.controller;
 import com.lenarsharipov.simplebank.dto.auth.JwtRequestDto;
 import com.lenarsharipov.simplebank.dto.auth.JwtResponseDto;
 import com.lenarsharipov.simplebank.dto.client.CreateClientDto;
-import com.lenarsharipov.simplebank.dto.client.CreatedUserDto;
+import com.lenarsharipov.simplebank.dto.client.CreatedClientDto;
 import com.lenarsharipov.simplebank.service.AuthService;
 import com.lenarsharipov.simplebank.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,7 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(CREATED)
     @Operation(summary = "Register new client with unique username, email, phone")
-    public CreatedUserDto register(@Valid @RequestBody CreateClientDto dto) {
+    public CreatedClientDto register(@Valid @RequestBody CreateClientDto dto) {
         return clientService.create(dto);
     }
 

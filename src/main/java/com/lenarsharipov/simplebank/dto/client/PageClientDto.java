@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class PageClientDto {
 
-    private List<ReadUserDto> content;
+    private List<ReadClientDto> content;
     private int pageNumber;
     private int pageSize;
     private long numberOfElements;

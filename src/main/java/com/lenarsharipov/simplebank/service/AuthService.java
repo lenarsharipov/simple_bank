@@ -9,25 +9,28 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @AllArgsConstructor
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider provider;
     private final UserService userService;
 
     public JwtResponseDto login(JwtRequestDto dto) {
-        var jwtResponse = new JwtResponseDto();
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        dto.getUsername(), dto.getPassword()));
+        var authenticationToken =
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+        authenticationManager.authenticate(authenticationToken);
         User user = userService.getByUsername(dto.getUsername());
+        var jwtResponse = new JwtResponseDto();
         jwtResponse.setId(user.getId());
         jwtResponse.setUsername(user.getUsername());
         jwtResponse.setAccessToken(
-                jwtTokenProvider.createAccessToken(
-                        user.getId(), user.getUsername()));
+                provider.createAccessToken(
+                        user.getId(), user.getUsername(), Set.of(user.getRole())));
+        jwtResponse.setRefreshToken(provider.createRefreshToken(user.getId(), user.getUsername()));
         return jwtResponse;
     }
 }

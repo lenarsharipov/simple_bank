@@ -3,7 +3,7 @@ package com.lenarsharipov.simplebank.controller;
 import com.lenarsharipov.simplebank.dto.account.TransferDto;
 import com.lenarsharipov.simplebank.dto.email.CreateEmailDto;
 import com.lenarsharipov.simplebank.dto.email.CreatedEmailDto;
-import com.lenarsharipov.simplebank.dto.filter.FiltersDto;
+import com.lenarsharipov.simplebank.dto.filter.ClientFiltersDto;
 import com.lenarsharipov.simplebank.dto.phone.CreatePhoneDto;
 import com.lenarsharipov.simplebank.dto.phone.CreatedPhoneDto;
 import com.lenarsharipov.simplebank.dto.client.PageClientDto;
@@ -91,7 +91,8 @@ public class ClientController {
 
     @GetMapping("/search")
     @Operation(summary = "Dynamic filtered search with sorting. Result is paged")
-    public PageClientDto search(FiltersDto filters,
+    @PreAuthorize("@customSecurityExpression.isAdmin()")
+    public PageClientDto search(ClientFiltersDto filters,
                                 @PageableDefault(direction = Sort.Direction.ASC)
                                 Pageable pageable) {
         return clientService.search(filters, pageable);

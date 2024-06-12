@@ -18,4 +18,11 @@ public class UserService {
                         new ResourceNotFoundException(
                                 "User not found"));
     }
+
+    public User getById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found"));
+    }
 }

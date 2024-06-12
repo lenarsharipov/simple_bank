@@ -19,7 +19,7 @@ public class JwtEntityFactory {
                 .id(user.getId())
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .authorities(toGrantedAuthorities(List.of(Role.ROLE_CLIENT)))
+                .authorities(toGrantedAuthorities(List.of(user.getRole())))
                 .build();
     }
 

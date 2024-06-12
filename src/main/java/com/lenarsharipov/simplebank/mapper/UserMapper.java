@@ -15,20 +15,4 @@ public class UserMapper {
                 .role(Role.ROLE_CLIENT)
                 .build();
     }
-
-//    public static ReadUserDto toReturnUserDto(Client client) {
-//        return ReadUserDto.builder()
-//                .id(client.getId())
-//                .username(client.getUsername())
-//                .fullName(client.getFullName())
-//                .birthDate(client.getBirthDate())
-//                .accountNumber(client.getAccount().getId().toString())
-//                .emails(client.getEmails().stream()
-//                        .map(Email::getAddress)
-//                        .collect(toList()))
-//                .phones(client.getPhones().stream()
-//                        .map(Phone::getNumber)
-//                        .collect(toList()))
-//                .build();
-//    }
 }
