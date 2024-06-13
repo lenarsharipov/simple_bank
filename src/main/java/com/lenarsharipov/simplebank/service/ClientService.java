@@ -14,10 +14,7 @@ import com.lenarsharipov.simplebank.exception.InsufficientFundsException;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import com.lenarsharipov.simplebank.exception.UnableToTransferException;
 import com.lenarsharipov.simplebank.mapper.*;
-import com.lenarsharipov.simplebank.model.Client;
-import com.lenarsharipov.simplebank.model.Email;
-import com.lenarsharipov.simplebank.model.Phone;
-import com.lenarsharipov.simplebank.model.User;
+import com.lenarsharipov.simplebank.model.*;
 import com.lenarsharipov.simplebank.repository.ClientRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +30,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.lenarsharipov.simplebank.model.Role.ROLE_CLIENT;
 
 @Service
 @AllArgsConstructor
@@ -86,8 +85,7 @@ public class ClientService {
     }
 
     @Transactional
-    public void transfer(Long senderUserId,
-                         TransferDto dto) {
+    public void transfer(Long senderUserId, TransferDto dto) {
         int attempts = 0;
         boolean isUpdated = false;
         Client sender = getById(senderUserId);
@@ -112,15 +110,13 @@ public class ClientService {
         }
     }
 
-    private void increaseBalance(Client client,
-                                 BigDecimal amount) {
+    private void increaseBalance(Client client, BigDecimal amount) {
         BigDecimal balance = client.getAccount().getBalance();
         balance = balance.add(amount);
         client.getAccount().setBalance(balance);
     }
 
-    private void decreaseBalance(Client client,
-                                 BigDecimal amount) {
+    private void decreaseBalance(Client client, BigDecimal amount) {
         BigDecimal balance = client.getAccount().getBalance();
         balance = balance.subtract(amount);
         client.getAccount().setBalance(balance);
@@ -135,22 +131,31 @@ public class ClientService {
 
     @Transactional
     public CreatedClientDto create(CreateClientDto dto) {
-        Client client = ClientMapper.toEntity(dto);
-        User user = UserMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        client.setUser(user);
-        client.setAccount(AccountMapper.toEntity(dto));
-        client.getEmails().add(new Email(null, dto.getEmail()));
-        client.getPhones().add(new Phone(null, dto.getPhone()));
+        Account account = Account.builder()
+                .initialDeposit(dto.initialBalance())
+                .balance(dto.initialBalance())
+                .build();
+        User user = User.builder()
+                .username(dto.username())
+                .password(passwordEncoder.encode(dto.password()))
+                .role(ROLE_CLIENT)
+                .build();
+        Client client = Client.builder()
+                .birthDate(dto.birthDate())
+                .fullName(dto.fullName())
+                .emails(List.of(Email.of(null, dto.email())))
+                .phones(List.of(Phone.of(null, dto.phone())))
+                .user(user)
+                .account(account)
+                .build();
         clientRepository.save(client);
         return ClientMapper.toCreatedClientDto(client, user);
     }
 
     @Transactional
-    public CreatedPhoneDto addPhone(Long clientId,
-                                    CreatePhoneDto dto) {
+    public CreatedPhoneDto addPhone(Long clientId, CreatePhoneDto dto) {
         Client client = getById(clientId);
-        Phone phone = new Phone(null, dto.getPhone());
+        Phone phone = Phone.of(null, dto.phone());
         client.getPhones().add(phone);
         return PhoneMapper.toDto(phone);
     }
@@ -161,13 +166,12 @@ public class ClientService {
                                        CreatePhoneDto dto) {
         Client client = getById(clientId);
         Phone phone = getPhone(phoneId, client);
-        phone.setNumber(dto.getPhone());
+        phone.setNumber(dto.phone());
         return PhoneMapper.toDto(phone);
     }
 
     @Transactional
-    public void deletePhone(Long clientId,
-                            Long phoneId) {
+    public void deletePhone(Long clientId, Long phoneId) {
         Client client = getById(clientId);
         if (client.getPhones().size() == 1) {
             throw new IllegalUserStateException(
@@ -177,8 +181,7 @@ public class ClientService {
         client.getPhones().remove(phone);
     }
 
-    private Phone getPhone(Long phoneId,
-                           Client client) {
+    private Phone getPhone(Long phoneId, Client client) {
         return client.getPhones().stream()
                 .filter(phone -> Objects.equals(phone.getId(), phoneId))
                 .findFirst()
@@ -186,18 +189,16 @@ public class ClientService {
                         new ResourceNotFoundException("Phone not found"));
     }
 
-    public boolean isPhoneOwner(Long clientId,
-                                Long phoneId) {
+    public boolean isPhoneOwner(Long clientId, Long phoneId) {
         Client client = getById(clientId);
         return client.getPhones().stream()
                 .anyMatch(p -> Objects.equals(p.getId(), phoneId));
     }
 
     @Transactional
-    public CreatedEmailDto addEmail(Long clientId,
-                                    CreateEmailDto dto) {
+    public CreatedEmailDto addEmail(Long clientId, CreateEmailDto dto) {
         Client client = getById(clientId);
-        Email email = new Email(null, dto.getEmail());
+        Email email = Email.of(null, dto.email());
         client.getEmails().add(email);
         return EmailMapper.toDto(email);
     }
@@ -208,13 +209,12 @@ public class ClientService {
                                        CreateEmailDto dto) {
         Client client = getById(clientId);
         Email email = getEmail(emailId, client);
-        email.setAddress(dto.getEmail());
+        email.setAddress(dto.email());
         return EmailMapper.toDto(email);
     }
 
     @Transactional
-    public void deleteEmail(Long clientId,
-                            Long emailId) {
+    public void deleteEmail(Long clientId, Long emailId) {
         Client client = getById(clientId);
         if (client.getEmails().size() == 1) {
             throw new IllegalUserStateException(
@@ -224,8 +224,7 @@ public class ClientService {
         client.getEmails().remove(email);
     }
 
-    private Email getEmail(Long emailId,
-                           Client client) {
+    private Email getEmail(Long emailId, Client client) {
         return client.getEmails().stream()
                 .filter(email -> Objects.equals(email.getId(), emailId))
                 .findFirst()
@@ -233,15 +232,13 @@ public class ClientService {
                         new ResourceNotFoundException("Email not found"));
     }
 
-    public boolean isEmailOwner(Long clientId,
-                                Long emailId) {
+    public boolean isEmailOwner(Long clientId, Long emailId) {
         Client client = getById(clientId);
         return client.getEmails().stream()
                 .anyMatch(email -> Objects.equals(email.getId(), emailId));
     }
 
-    public boolean isUserOwner(Long clientId,
-                               Long userId) {
+    public boolean isUserOwner(Long clientId, Long userId) {
         var result = false;
         Optional<Client> optionalClient = clientRepository.findById(clientId);
         if (optionalClient.isPresent()) {
@@ -250,8 +247,7 @@ public class ClientService {
         return result;
     }
 
-    public PageClientDto search(ClientFiltersDto filters,
-                                Pageable pageable) {
+    public PageClientDto search(ClientFiltersDto filters, Pageable pageable) {
         Specification<Client> specification = ClientSpecMapper.toSpecification(filters);
         Page<Client> userPage = clientRepository.findAll(specification, pageable);
         return ClientPageMapper.toPageClientDto(userPage);

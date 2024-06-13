@@ -11,9 +11,12 @@ public record TransferDto(
         @Schema(description = "Transferred amount", example = "10 000")
         @Digits(integer = 5, fraction = 2)
         @Positive(message = "Amount must be > 0")
-        @NotNull(message = "Cannot be null") BigDecimal amount,
+        @NotNull(message = "Cannot be null")
+        BigDecimal amount,
+
         @Schema(description = "Receiver id", example = "1")
         @Positive
-        @NotNull Long receiverUserId) {
+        @NotNull
+        Long receiverUserId) {
 
 }

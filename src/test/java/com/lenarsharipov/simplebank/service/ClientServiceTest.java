@@ -34,11 +34,11 @@ public class ClientServiceTest {
     void testTransferInsufficientFunds() {
         Client sender = new Client();
         sender.setId(1L);
-        sender.setAccount(new Account(1L, 0L, new BigDecimal(20), new BigDecimal(20)));
+        sender.setAccount(Account.of(1L, 0L, new BigDecimal(20), new BigDecimal(20)));
 
         Client receiver = new Client();
         receiver.setId(2L);
-        receiver.setAccount(new Account(2L, 0L, new BigDecimal(100), new BigDecimal(100)));
+        receiver.setAccount(Account.of(2L, 0L, new BigDecimal(100), new BigDecimal(100)));
 
         TransferDto transferDto = new TransferDto(BigDecimal.valueOf(50), 2L);
 

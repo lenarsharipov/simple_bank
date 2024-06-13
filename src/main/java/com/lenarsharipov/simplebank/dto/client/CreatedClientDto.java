@@ -1,23 +1,15 @@
 package com.lenarsharipov.simplebank.dto.client;
 
 import lombok.Builder;
-import lombok.Data;
 
 import java.time.LocalDate;
 
-@Data
 @Builder
-public class CreatedClientDto {
-
-    private String username;
-
-    private String fullName;
-
-    private LocalDate birthDate;
-
-    private String accountNo;
-
-    private String email;
-
-    private String phone;
+public record CreatedClientDto(
+    String username,
+    String fullName,
+    LocalDate birthDate,
+    String accountNo,
+    String email,
+    String phone) {
 }

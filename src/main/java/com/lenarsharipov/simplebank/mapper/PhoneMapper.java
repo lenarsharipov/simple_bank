@@ -12,10 +12,4 @@ public class PhoneMapper {
                 .phone(phone.getNumber())
                 .build();
     }
-
-    public static Phone toEntity(String phoneNumber) {
-        return Phone.builder()
-                .number(phoneNumber)
-                .build();
-    }
 }

@@ -1,6 +1,5 @@
 package com.lenarsharipov.simplebank.mapper;
 
-import com.lenarsharipov.simplebank.dto.client.CreateClientDto;
 import com.lenarsharipov.simplebank.dto.client.CreatedClientDto;
 import com.lenarsharipov.simplebank.dto.client.ReadClientDto;
 import com.lenarsharipov.simplebank.model.Client;
@@ -13,13 +12,6 @@ import static java.util.stream.Collectors.toList;
 
 @UtilityClass
 public class ClientMapper {
-
-    public static Client toEntity(CreateClientDto dto) {
-        return Client.builder()
-                .fullName(dto.getFullName())
-                .birthDate(dto.getBirthDate())
-                .build();
-    }
 
     public static CreatedClientDto toCreatedClientDto(Client client, User user) {
         return CreatedClientDto.builder()

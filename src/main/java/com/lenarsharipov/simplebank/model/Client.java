@@ -11,7 +11,7 @@ import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Data
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @NoArgsConstructor
 @ToString(exclude = {"emails", "phones"})
 @EqualsAndHashCode(exclude = {"emails", "phones"}, callSuper = false)

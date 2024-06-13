@@ -12,10 +12,4 @@ public class EmailMapper {
                 .email(email.getAddress())
                 .build();
     }
-
-    public Email toEntity(String emailAddress) {
-        return Email.builder()
-                .address(emailAddress)
-                .build();
-    }
 }

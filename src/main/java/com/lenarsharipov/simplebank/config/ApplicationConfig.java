@@ -89,6 +89,8 @@ public class ApplicationConfig {
 //                        configurer.requestMatchers("/auth/**")
                         configurer.requestMatchers("/auth/login")
                                 .permitAll()
+                                .requestMatchers("/auth/refresh")
+                                .permitAll()
                                 .requestMatchers("/swagger-ui/**")
                                 .permitAll()
                                 .requestMatchers("/v3/api-docs/**")

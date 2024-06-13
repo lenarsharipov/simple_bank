@@ -74,21 +74,17 @@ public class JwtTokenProvider {
     }
 
     public JwtResponseDto refreshUserTokens(String refreshToken) {
-        JwtResponseDto jwtResponse = new JwtResponseDto();
         if (!validateToken(refreshToken)) {
             throw new AccessDeniedException();
         }
         Long userId = Long.valueOf(getId(refreshToken));
         User user = userService.getById(userId);
-        jwtResponse.setId(userId);
-        jwtResponse.setUsername(user.getUsername());
-        jwtResponse.setAccessToken(
-                createAccessToken(userId, user.getUsername(), Set.of(user.getRole()))
-        );
-        jwtResponse.setRefreshToken(
-                createRefreshToken(userId, user.getUsername())
-        );
-        return jwtResponse;
+        return JwtResponseDto.builder()
+                .id(userId)
+                .username(user.getUsername())
+                .accessToken(createAccessToken(userId, user.getUsername(), Set.of(user.getRole())))
+                .refreshToken(createRefreshToken(userId, user.getUsername()))
+                .build();
     }
 
     public Authentication getAuthentication(String token) {

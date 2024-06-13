@@ -35,4 +35,10 @@ public class AuthController {
     public JwtResponseDto login(@Valid @RequestBody JwtRequestDto dto) {
         return authService.login(dto);
     }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "Refresh by username and password")
+    public JwtResponseDto refresh(@RequestBody String refreshToken) {
+        return authService.refresh(refreshToken);
+    }
 }

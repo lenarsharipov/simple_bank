@@ -21,16 +21,20 @@ public class AuthService {
 
     public JwtResponseDto login(JwtRequestDto dto) {
         var authenticationToken =
-                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+                new UsernamePasswordAuthenticationToken(dto.username(), dto.password());
         authenticationManager.authenticate(authenticationToken);
-        User user = userService.getByUsername(dto.getUsername());
-        var jwtResponse = new JwtResponseDto();
-        jwtResponse.setId(user.getId());
-        jwtResponse.setUsername(user.getUsername());
-        jwtResponse.setAccessToken(
-                provider.createAccessToken(
-                        user.getId(), user.getUsername(), Set.of(user.getRole())));
-        jwtResponse.setRefreshToken(provider.createRefreshToken(user.getId(), user.getUsername()));
-        return jwtResponse;
+        User user = userService.getByUsername(dto.username());
+        return JwtResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .accessToken(provider.createAccessToken(
+                        user.getId(), user.getUsername(), Set.of(user.getRole())))
+                .refreshToken(provider.createRefreshToken(
+                        user.getId(), user.getUsername()))
+                .build();
+    }
+
+    public JwtResponseDto refresh(String refreshToken) {
+        return provider.refreshUserTokens(refreshToken);
     }
 }

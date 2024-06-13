@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {
