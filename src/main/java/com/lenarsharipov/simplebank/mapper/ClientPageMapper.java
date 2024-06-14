@@ -28,7 +28,7 @@ public class ClientPageMapper {
 
     public static List<ReadClientDto> toReturnClientDto(Page<Client> clientPage) {
         return clientPage.getContent().stream()
-                .map(ClientMapper::toReturnClientDto)
+                .map(ClientMapperManual::toReturnClientDto)
                 .collect(toList());
     }
 }

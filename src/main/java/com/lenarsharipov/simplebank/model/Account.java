@@ -18,6 +18,7 @@ public class Account extends BaseEntity {
     private Long id;
 
     @Version
+    @Builder.Default
     private Long version = 0L;
 
     private BigDecimal initialDeposit;

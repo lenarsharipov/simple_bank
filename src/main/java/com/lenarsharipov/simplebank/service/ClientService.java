@@ -13,7 +13,9 @@ import com.lenarsharipov.simplebank.exception.IllegalUserStateException;
 import com.lenarsharipov.simplebank.exception.InsufficientFundsException;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import com.lenarsharipov.simplebank.exception.UnableToTransferException;
-import com.lenarsharipov.simplebank.mapper.*;
+import com.lenarsharipov.simplebank.mapper.ClientPageMapper;
+import com.lenarsharipov.simplebank.mapper.ClientServiceMapper;
+import com.lenarsharipov.simplebank.mapper.ClientSpecMapperManual;
 import com.lenarsharipov.simplebank.model.*;
 import com.lenarsharipov.simplebank.repository.ClientRepository;
 import lombok.AllArgsConstructor;
@@ -31,8 +33,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.lenarsharipov.simplebank.model.Role.ROLE_CLIENT;
-
 @Service
 @AllArgsConstructor
 @Transactional(readOnly = true)
@@ -45,6 +45,7 @@ public class ClientService {
     private final ClientRepository clientRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final ClientServiceMapper mapper;
 
     @Scheduled(fixedRate = 60_000)
     @Transactional
@@ -74,11 +75,11 @@ public class ClientService {
                     isUpdated = true;
                 } catch (ObjectOptimisticLockingFailureException e) {
                     attempts++;
-                    client = getById(client.getId());
                     if (attempts == MAX_TRANSFER_ATTEMPTS) {
                         throw new UnableToTransferException(
                                 "Unable to proceed transfer operation");
                     }
+                    client = getById(client.getId());
                 }
             }
         }
@@ -100,12 +101,12 @@ public class ClientService {
                 isUpdated = true;
             } catch (ObjectOptimisticLockingFailureException e) {
                 attempts++;
-                sender = getById(sender.getId());
-                receiver = getById(receiver.getId());
                 if (attempts == MAX_TRANSFER_ATTEMPTS) {
                     throw new UnableToTransferException(
                             "Unable to proceed transfer operation");
                 }
+                sender = getById(sender.getId());
+                receiver = getById(receiver.getId());
             }
         }
     }
@@ -131,25 +132,12 @@ public class ClientService {
 
     @Transactional
     public CreatedClientDto create(CreateClientDto dto) {
-        Account account = Account.builder()
-                .initialDeposit(dto.initialBalance())
-                .balance(dto.initialBalance())
-                .build();
-        User user = User.builder()
-                .username(dto.username())
-                .password(passwordEncoder.encode(dto.password()))
-                .role(ROLE_CLIENT)
-                .build();
-        Client client = Client.builder()
-                .birthDate(dto.birthDate())
-                .fullName(dto.fullName())
-                .emails(List.of(Email.of(null, dto.email())))
-                .phones(List.of(Phone.of(null, dto.phone())))
-                .user(user)
-                .account(account)
-                .build();
+        Account account = mapper.toAccountEntity(dto);
+        User user = mapper.toUserEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        Client client = mapper.toClientEntity(dto, user, account);
         clientRepository.save(client);
-        return ClientMapper.toCreatedClientDto(client, user);
+        return mapper.toCreatedClientDto(client, user);
     }
 
     @Transactional
@@ -157,7 +145,7 @@ public class ClientService {
         Client client = getById(clientId);
         Phone phone = Phone.of(null, dto.phone());
         client.getPhones().add(phone);
-        return PhoneMapper.toDto(phone);
+        return mapper.toCreatedPhoneDto(phone);
     }
 
     @Transactional
@@ -167,7 +155,7 @@ public class ClientService {
         Client client = getById(clientId);
         Phone phone = getPhone(phoneId, client);
         phone.setNumber(dto.phone());
-        return PhoneMapper.toDto(phone);
+        return mapper.toCreatedPhoneDto(phone);
     }
 
     @Transactional
@@ -200,7 +188,7 @@ public class ClientService {
         Client client = getById(clientId);
         Email email = Email.of(null, dto.email());
         client.getEmails().add(email);
-        return EmailMapper.toDto(email);
+        return mapper.toCreatedEmailDto(email);
     }
 
     @Transactional
@@ -210,7 +198,8 @@ public class ClientService {
         Client client = getById(clientId);
         Email email = getEmail(emailId, client);
         email.setAddress(dto.email());
-        return EmailMapper.toDto(email);
+//        return emailMapper.toDto(email);
+        return mapper.toCreatedEmailDto(email);
     }
 
     @Transactional
@@ -218,7 +207,7 @@ public class ClientService {
         Client client = getById(clientId);
         if (client.getEmails().size() == 1) {
             throw new IllegalUserStateException(
-                    "User must have at least 1 email");
+                    "Client must have at least 1 email");
         }
         Email email = getEmail(emailId, client);
         client.getEmails().remove(email);
@@ -248,7 +237,7 @@ public class ClientService {
     }
 
     public PageClientDto search(ClientFiltersDto filters, Pageable pageable) {
-        Specification<Client> specification = ClientSpecMapper.toSpecification(filters);
+        Specification<Client> specification = ClientSpecMapperManual.toSpecification(filters);
         Page<Client> userPage = clientRepository.findAll(specification, pageable);
         return ClientPageMapper.toPageClientDto(userPage);
     }

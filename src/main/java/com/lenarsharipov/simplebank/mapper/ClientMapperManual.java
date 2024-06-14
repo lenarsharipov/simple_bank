@@ -11,7 +11,7 @@ import lombok.experimental.UtilityClass;
 import static java.util.stream.Collectors.toList;
 
 @UtilityClass
-public class ClientMapper {
+public class ClientMapperManual {
 
     public static CreatedClientDto toCreatedClientDto(Client client, User user) {
         return CreatedClientDto.builder()

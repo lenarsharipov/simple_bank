@@ -5,7 +5,7 @@ import com.lenarsharipov.simplebank.service.search.ClientSpecification;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ClientSpecMapper {
+public class ClientSpecMapperManual {
 
     public static ClientSpecification toSpecification(ClientFiltersDto dto) {
         return ClientSpecification.builder()
