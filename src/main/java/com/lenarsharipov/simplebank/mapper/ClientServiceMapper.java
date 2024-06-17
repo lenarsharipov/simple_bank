@@ -2,38 +2,88 @@ package com.lenarsharipov.simplebank.mapper;
 
 import com.lenarsharipov.simplebank.dto.client.CreateClientDto;
 import com.lenarsharipov.simplebank.dto.client.CreatedClientDto;
+import com.lenarsharipov.simplebank.dto.client.PageClientDto;
+import com.lenarsharipov.simplebank.dto.client.ReadClientDto;
 import com.lenarsharipov.simplebank.dto.email.CreatedEmailDto;
+import com.lenarsharipov.simplebank.dto.filter.ClientFiltersDto;
 import com.lenarsharipov.simplebank.dto.phone.CreatedPhoneDto;
 import com.lenarsharipov.simplebank.model.*;
+import com.lenarsharipov.simplebank.service.search.ClientSpecification;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Mapper(componentModel = "spring",
         imports = {Role.class, List.class})
-public abstract class ClientServiceMapper {
+public interface ClientServiceMapper {
+
+    @Mapping(source = "content", target = "content", qualifiedByName = "clientsToReadClientDtoList")
+    @Mapping(source = "number", target = "pageNumber", qualifiedByName = "incrementPageNumber")
+    @Mapping(source = "size", target = "pageSize")
+    @Mapping(source = "numberOfElements", target = "numberOfElements")
+    @Mapping(source = "totalElements", target = "totalElements")
+    @Mapping(source = "totalPages", target = "totalPages")
+    @Mapping(source = "first", target = "isFirst")
+    @Mapping(source = "empty", target = "isEmpty")
+    @Mapping(source = "sort.sorted", target = "isSorted")
+    PageClientDto toPageClientDto(Page<Client> clientPage);
+
+    @Named("clientsToReadClientDtoList")
+    static List<ReadClientDto> clientsToReadClientDtoList(List<Client> clients) {
+        return clients.stream()
+                .map(ClientServiceMapper::toReturnClientDto)
+                .collect(Collectors.toList());
+    }
+
+    static ReadClientDto toReturnClientDto(Client client) {
+        return ReadClientDto.builder()
+                .id(client.getId())
+                .username(client.getUser().getUsername())
+                .fullName(client.getFullName())
+                .birthDate(client.getBirthDate())
+                .accountNumber(client.getAccount().getId().toString())
+                .phones(client.getPhones().stream().map(Phone::getNumber).collect(toList()))
+                .emails(client.getEmails().stream().map(Email::getAddress).collect(toList()))
+                .build();
+    }
+
+    @Named("incrementPageNumber")
+    static int incrementPageNumber(int pageNumber) {
+        return pageNumber + 1;
+    }
+
+    ClientSpecification toClientSpecification(ClientFiltersDto dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "emails", expression = "java(List.of(Email.of(null, dto.email())))")
     @Mapping(target = "phones", expression = "java(List.of(Phone.of(null, dto.phone())))")
-    public abstract Client toClientEntity(CreateClientDto dto, User user, Account account);
+    Client toClientEntity(CreateClientDto dto, User user, Account account);
+
     @Mapping(source = "client.account.id", target = "accountNo", numberFormat = "#")
     @Mapping(target = "email", expression = "java(client.getEmails().get(0).getAddress())")
     @Mapping(target = "phone", expression = "java(client.getPhones().get(0).getNumber())")
-    public abstract CreatedClientDto toCreatedClientDto(Client client, User user);
+    CreatedClientDto toCreatedClientDto(Client client, User user);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(source = "initialBalance", target = "initialDeposit")
     @Mapping(source = "initialBalance", target = "balance")
-    public abstract Account toAccountEntity(CreateClientDto dto);
+    Account toAccountEntity(CreateClientDto dto);
 
     @Mapping(target = "password", constant = "")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", expression = "java(Role.ROLE_CLIENT)")
-    public abstract User toUserEntity(CreateClientDto dto);
+    User toUserEntity(CreateClientDto dto);
 
     @Mapping(source = "email.address", target = "email")
-    public abstract CreatedEmailDto toCreatedEmailDto(Email email);
+    CreatedEmailDto toCreatedEmailDto(Email email);
 
     @Mapping(source = "phone.number", target = "phone")
-    public abstract CreatedPhoneDto toCreatedPhoneDto(Phone phone);
+    CreatedPhoneDto toCreatedPhoneDto(Phone phone);
 }

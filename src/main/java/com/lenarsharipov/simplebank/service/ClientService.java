@@ -13,9 +13,7 @@ import com.lenarsharipov.simplebank.exception.IllegalUserStateException;
 import com.lenarsharipov.simplebank.exception.InsufficientFundsException;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import com.lenarsharipov.simplebank.exception.UnableToTransferException;
-import com.lenarsharipov.simplebank.mapper.ClientPageMapper;
 import com.lenarsharipov.simplebank.mapper.ClientServiceMapper;
-import com.lenarsharipov.simplebank.mapper.ClientSpecMapperManual;
 import com.lenarsharipov.simplebank.model.*;
 import com.lenarsharipov.simplebank.repository.ClientRepository;
 import lombok.AllArgsConstructor;
@@ -45,6 +43,7 @@ public class ClientService {
     private final ClientRepository clientRepository;
 
     private final PasswordEncoder passwordEncoder;
+
     private final ClientServiceMapper mapper;
 
     @Scheduled(fixedRate = 60_000)
@@ -198,7 +197,6 @@ public class ClientService {
         Client client = getById(clientId);
         Email email = getEmail(emailId, client);
         email.setAddress(dto.email());
-//        return emailMapper.toDto(email);
         return mapper.toCreatedEmailDto(email);
     }
 
@@ -237,8 +235,8 @@ public class ClientService {
     }
 
     public PageClientDto search(ClientFiltersDto filters, Pageable pageable) {
-        Specification<Client> specification = ClientSpecMapperManual.toSpecification(filters);
+        Specification<Client> specification = mapper.toClientSpecification(filters);
         Page<Client> userPage = clientRepository.findAll(specification, pageable);
-        return ClientPageMapper.toPageClientDto(userPage);
+        return mapper.toPageClientDto(userPage);
     }
 }

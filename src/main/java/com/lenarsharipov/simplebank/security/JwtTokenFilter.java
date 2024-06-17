@@ -1,6 +1,5 @@
 package com.lenarsharipov.simplebank.security;
 
-import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -14,7 +13,7 @@ import org.springframework.web.filter.GenericFilterBean;
 @AllArgsConstructor
 public class JwtTokenFilter extends GenericFilterBean {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider provider;
 
     @Override
     @SneakyThrows
@@ -29,16 +28,13 @@ public class JwtTokenFilter extends GenericFilterBean {
         }
 
         try {
-            if (bearerToken != null
-                && jwtTokenProvider.validateToken(bearerToken)) {
-                Authentication authentication
-                        = jwtTokenProvider.getAuthentication(bearerToken);
+            if (bearerToken != null && provider.validateToken(bearerToken)) {
+                Authentication authentication = provider.getAuthentication(bearerToken);
                 if (authentication != null) {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-//        } catch (Exception ignored) {
-        } catch (ResourceNotFoundException ignored) {
+        } catch (Exception ignored) {
 
         }
 
