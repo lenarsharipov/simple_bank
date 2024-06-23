@@ -124,9 +124,7 @@ public class ClientService {
 
     private Client getById(Long userId) {
         return clientRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Client not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
     }
 
     @Transactional
@@ -134,7 +132,8 @@ public class ClientService {
         Account account = mapper.toAccountEntity(dto);
         User user = mapper.toUserEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.password()));
-        Client client = mapper.toClientEntity(dto, user, account);
+        Phone phone = Phone.of(dto.phone());
+        Client client = mapper.toClientEntity(dto, user, account, phone);
         clientRepository.save(client);
         return mapper.toCreatedClientDto(client, user);
     }
@@ -142,44 +141,37 @@ public class ClientService {
     @Transactional
     public CreatedPhoneDto addPhone(Long clientId, CreatePhoneDto dto) {
         Client client = getById(clientId);
-        Phone phone = Phone.of(null, dto.phone());
-        client.getPhones().add(phone);
+        Phone phone = Phone.of(dto.phone());
+        client.getPhones().put(phone.getExternalId(), phone);
         return mapper.toCreatedPhoneDto(phone);
     }
 
     @Transactional
     public CreatedPhoneDto updatePhone(Long clientId,
-                                       Long phoneId,
+                                       String externalId,
                                        CreatePhoneDto dto) {
         Client client = getById(clientId);
-        Phone phone = getPhone(phoneId, client);
+        Phone phone = getPhone(client, externalId);
         phone.setNumber(dto.phone());
         return mapper.toCreatedPhoneDto(phone);
     }
 
     @Transactional
-    public void deletePhone(Long clientId, Long phoneId) {
+    public void deletePhone(Long clientId, String externalId) {
         Client client = getById(clientId);
         if (client.getPhones().size() == 1) {
-            throw new IllegalUserStateException(
-                    "Client must have at least 1 phone");
+            throw new IllegalUserStateException("Client must have at least 1 phone");
         }
-        Phone phone = getPhone(phoneId, client);
-        client.getPhones().remove(phone);
+        client.getPhones().remove(externalId);
     }
 
-    private Phone getPhone(Long phoneId, Client client) {
-        return client.getPhones().stream()
-                .filter(phone -> Objects.equals(phone.getId(), phoneId))
-                .findFirst()
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Phone not found"));
+    private Phone getPhone(Client client, String externalId) {
+        return Optional.ofNullable(client.getPhones().get(externalId))
+                .orElseThrow(() -> new ResourceNotFoundException("Phone not found"));
     }
 
-    public boolean isPhoneOwner(Long clientId, Long phoneId) {
-        Client client = getById(clientId);
-        return client.getPhones().stream()
-                .anyMatch(p -> Objects.equals(p.getId(), phoneId));
+    public boolean isPhoneOwner(Long clientId, String externalId) {
+        return getById(clientId).getPhones().containsKey(externalId);
     }
 
     @Transactional
@@ -204,8 +196,7 @@ public class ClientService {
     public void deleteEmail(Long clientId, Long emailId) {
         Client client = getById(clientId);
         if (client.getEmails().size() == 1) {
-            throw new IllegalUserStateException(
-                    "Client must have at least 1 email");
+            throw new IllegalUserStateException("Client must have at least 1 email");
         }
         Email email = getEmail(emailId, client);
         client.getEmails().remove(email);
@@ -215,8 +206,7 @@ public class ClientService {
         return client.getEmails().stream()
                 .filter(email -> Objects.equals(email.getId(), emailId))
                 .findFirst()
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Email not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Email not found"));
     }
 
     public boolean isEmailOwner(Long clientId, Long emailId) {

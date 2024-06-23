@@ -36,7 +36,7 @@ public class CustomSecurityExpression {
         return canAccessUser(userId) && clientService.isEmailOwner(userId, emailId);
     }
 
-    public boolean canAccessPhone(Long userId, Long phoneId) {
-        return canAccessUser(userId) && clientService.isPhoneOwner(userId, phoneId);
+    public boolean canAccessPhone(Long userId, String phoneNumber) {
+        return canAccessUser(userId) && clientService.isPhoneOwner(userId, phoneNumber);
     }
 }

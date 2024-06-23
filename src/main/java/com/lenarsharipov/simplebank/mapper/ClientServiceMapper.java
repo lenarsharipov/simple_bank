@@ -15,12 +15,13 @@ import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
 @Mapper(componentModel = "spring",
-        imports = {Role.class, List.class})
+        imports = {Role.class, List.class, Map.class})
 public interface ClientServiceMapper {
 
     @Mapping(source = "content", target = "content", qualifiedByName = "clientsToReadClientDtoList")
@@ -48,7 +49,7 @@ public interface ClientServiceMapper {
                 .fullName(client.getFullName())
                 .birthDate(client.getBirthDate())
                 .accountNumber(client.getAccount().getId().toString())
-                .phones(client.getPhones().stream().map(Phone::getNumber).collect(toList()))
+                .phones(client.getPhones().values().stream().map(Phone::getNumber).collect(toList()))
                 .emails(client.getEmails().stream().map(Email::getAddress).collect(toList()))
                 .build();
     }
@@ -62,12 +63,12 @@ public interface ClientServiceMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "emails", expression = "java(List.of(Email.of(null, dto.email())))")
-    @Mapping(target = "phones", expression = "java(List.of(Phone.of(null, dto.phone())))")
-    Client toClientEntity(CreateClientDto dto, User user, Account account);
+    @Mapping(target = "phones", expression = "java(Map.of(phone.getExternalId(), phone))")
+    Client toClientEntity(CreateClientDto dto, User user, Account account, Phone phone);
 
     @Mapping(source = "client.account.id", target = "accountNo", numberFormat = "#")
-    @Mapping(target = "email", expression = "java(client.getEmails().get(0).getAddress())")
-    @Mapping(target = "phone", expression = "java(client.getPhones().get(0).getNumber())")
+    @Mapping(target = "email", expression = "java(client.getEmails().iterator().next().getAddress())")
+    @Mapping(target = "phone", expression = "java(client.getPhones().values().iterator().next().getNumber())")
     CreatedClientDto toCreatedClientDto(Client client, User user);
 
     @Mapping(target = "id", ignore = true)

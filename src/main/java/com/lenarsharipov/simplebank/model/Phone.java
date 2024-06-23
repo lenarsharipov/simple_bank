@@ -5,6 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.io.Serializable;
+import java.util.UUID;
+
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @EqualsAndHashCode(callSuper = true)
@@ -13,11 +16,22 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Phone extends BaseEntity {
+public class Phone
+        extends BaseEntity
+        implements Serializable {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Builder.Default
+    private String externalId = UUID.randomUUID().toString();
+
     private String number;
+
+    public static Phone of(String number) {
+        return Phone.builder()
+                .number(number)
+                .build();
+    }
 }

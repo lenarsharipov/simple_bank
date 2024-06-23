@@ -3,6 +3,7 @@ package com.lenarsharipov.simplebank.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
@@ -11,7 +12,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor(staticName = "of")
 @Builder
 @Entity
-public class Account extends BaseEntity {
+public class Account
+        extends BaseEntity
+        implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

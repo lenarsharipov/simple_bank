@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS email
 CREATE TABLE IF NOT EXISTS phone
 (
     id            BIGSERIAL PRIMARY KEY,
+    external_id   VARCHAR(36)                   NOT NULL UNIQUE,
     number        VARCHAR(32)                   NOT NULL UNIQUE,
     client_id     BIGINT REFERENCES client (id) NOT NULL,
     created_date  TIMESTAMP                     NOT NULL,

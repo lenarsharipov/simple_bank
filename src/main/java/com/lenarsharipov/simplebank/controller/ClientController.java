@@ -38,25 +38,25 @@ public class ClientController {
         return clientService.addPhone(userId, dto);
     }
 
-    @PutMapping("/{userId}/phones/{phoneId}")
+    @PutMapping("/{userId}/phones/{externalId}")
     @Operation(summary = "Update an existing phone number of the specified client")
-    @PreAuthorize("@customSecurityExpression.canAccessPhone(#userId, #phoneId)")
+    @PreAuthorize("@customSecurityExpression.canAccessPhone(#userId, #externalId)")
     public CreatedPhoneDto updatePhone(@PathVariable Long userId,
-                                       @PathVariable Long phoneId,
+                                       @PathVariable String externalId,
                                        @Valid @RequestBody CreatePhoneDto dto) {
-        return clientService.updatePhone(userId, phoneId, dto);
+        return clientService.updatePhone(userId, externalId, dto);
     }
 
-    @DeleteMapping("/{userId}/phones/{phoneId}")
+    @DeleteMapping("/{userId}/phones/{externalId}")
     @ResponseStatus(NO_CONTENT)
     @Operation(summary = """
             Delete an existing phone number if it is not
             the last one of the specified client
             """)
-    @PreAuthorize("@customSecurityExpression.canAccessPhone(#userId, #phoneId)")
+    @PreAuthorize("@customSecurityExpression.canAccessPhone(#userId, #externalId)")
     public void deletePhone(@PathVariable Long userId,
-                            @PathVariable Long phoneId) {
-        clientService.deletePhone(userId, phoneId);
+                            @PathVariable String externalId) {
+        clientService.deletePhone(userId, externalId);
     }
 
     @PostMapping("/{userId}/emails")
