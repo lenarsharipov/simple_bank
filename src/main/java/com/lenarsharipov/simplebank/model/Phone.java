@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @Builder
 @Entity
+@Audited
 public class Phone
         extends BaseEntity
         implements Serializable {

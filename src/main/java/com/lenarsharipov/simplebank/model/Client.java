@@ -2,6 +2,8 @@ package com.lenarsharipov.simplebank.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -20,6 +22,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(exclude = {"emails", "phones"}, callSuper = false)
 @Builder
 @Entity
+@Audited
 public class Client
         extends BaseEntity
         implements Serializable {
@@ -38,11 +41,13 @@ public class Client
     @OneToOne(fetch = FetchType.LAZY, cascade = PERSIST)
     private Account account;
 
+    @NotAudited
     @Builder.Default
     @OneToMany(cascade = {PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "client_id", nullable = false)
     private List<Email> emails = new ArrayList<>();
 
+    @NotAudited
     @Builder.Default
     @OneToMany(cascade = PERSIST, orphanRemoval = true)
     @JoinColumn(name = "client_id", nullable = false)

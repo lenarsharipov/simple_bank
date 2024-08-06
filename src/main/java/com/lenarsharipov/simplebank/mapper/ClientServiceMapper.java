@@ -59,6 +59,8 @@ public interface ClientServiceMapper {
         return pageNumber + 1;
     }
 
+
+
     ClientSpecification toClientSpecification(ClientFiltersDto dto);
 
     @Mapping(target = "id", ignore = true)

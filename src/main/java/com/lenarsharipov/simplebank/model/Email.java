@@ -2,6 +2,7 @@ package com.lenarsharipov.simplebank.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor(staticName = "of")
 @Builder
 @Entity
+@Audited
 public class Email
         extends BaseEntity
         implements Serializable {

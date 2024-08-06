@@ -13,6 +13,7 @@ import com.lenarsharipov.simplebank.exception.IllegalUserStateException;
 import com.lenarsharipov.simplebank.exception.InsufficientFundsException;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
 import com.lenarsharipov.simplebank.exception.UnableToTransferException;
+import com.lenarsharipov.simplebank.mapper.ClientMapper;
 import com.lenarsharipov.simplebank.mapper.ClientServiceMapper;
 import com.lenarsharipov.simplebank.model.*;
 import com.lenarsharipov.simplebank.repository.ClientRepository;
@@ -45,6 +46,8 @@ public class ClientService {
     private final PasswordEncoder passwordEncoder;
 
     private final ClientServiceMapper mapper;
+
+    private final ClientMapper clientMapper;
 
     @Scheduled(fixedRate = 60_000)
     @Transactional
@@ -127,15 +130,22 @@ public class ClientService {
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
     }
 
+//    @Transactional
+//    public CreatedClientDto create(CreateClientDto dto) {
+//        Account account = mapper.toAccountEntity(dto);
+//        User user = mapper.toUserEntity(dto);
+//        user.setPassword(passwordEncoder.encode(dto.password()));
+//        Phone phone = Phone.of(dto.phone());
+//        Client client = mapper.toClientEntity(dto, user, account, phone);
+//        clientRepository.save(client);
+//        return mapper.toCreatedClientDto(client, user);
+//    }
+
     @Transactional
     public CreatedClientDto create(CreateClientDto dto) {
-        Account account = mapper.toAccountEntity(dto);
-        User user = mapper.toUserEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.password()));
-        Phone phone = Phone.of(dto.phone());
-        Client client = mapper.toClientEntity(dto, user, account, phone);
+        Client client = clientMapper.toClientEntity(dto);
         clientRepository.save(client);
-        return mapper.toCreatedClientDto(client, user);
+        return clientMapper.toCreatedClientDto(client);
     }
 
     @Transactional

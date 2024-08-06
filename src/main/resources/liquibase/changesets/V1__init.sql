@@ -57,3 +57,21 @@ CREATE TABLE IF NOT EXISTS phone
     created_by    VARCHAR(128)                  NOT NULL,
     modified_by   VARCHAR(128)
 );
+
+CREATE TABLE IF NOT EXISTS revinfo
+(
+    id        BIGSERIAL PRIMARY KEY,
+    timestamp BIGINT       NOT NULL,
+    username  VARCHAR(128) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users_aud
+(
+    id       BIGSERIAL,
+    rev      BIGINT REFERENCES revinfo (id) NOT NULL,
+    PRIMARY KEY (id, rev),
+    revType  SMALLINT,
+    username VARCHAR(128),
+    role     VARCHAR(32)
+);
+

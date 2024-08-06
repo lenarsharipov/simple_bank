@@ -2,6 +2,8 @@ package com.lenarsharipov.simplebank.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor(staticName = "of")
 @Builder
 @Entity
+@Audited
 public class Account
         extends BaseEntity
         implements Serializable {
@@ -20,6 +23,7 @@ public class Account
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotAudited
     @Version
     @Builder.Default
     private Long version = 0L;
