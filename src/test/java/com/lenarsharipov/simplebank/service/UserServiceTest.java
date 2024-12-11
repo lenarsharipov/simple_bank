@@ -1,23 +1,23 @@
 package com.lenarsharipov.simplebank.service;
 
-import com.lenarsharipov.simplebank.dto.account.TransferDto;
-import com.lenarsharipov.simplebank.exception.InsufficientFundsException;
 import com.lenarsharipov.simplebank.exception.ResourceNotFoundException;
-import com.lenarsharipov.simplebank.model.Account;
 import com.lenarsharipov.simplebank.model.User;
 import com.lenarsharipov.simplebank.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UserServiceTest {
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -25,56 +25,58 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    public UserServiceTest() {
-        MockitoAnnotations.openMocks(this);
+    private User user;
+    private static final long USER_ID = 1L;
+    private static final String USER_NAME = "test";
+
+    @BeforeEach
+    public void setUp() {
+        user = new User();
+        user.setId(USER_ID);
+        user.setUsername(USER_NAME);
     }
 
     @Test
-    void testTransferSuccess() {
-        User sender = new User();
-        sender.setId(1L);
-        sender.setAccount(new Account(1L, 0L, new BigDecimal(100), new BigDecimal(100)));
+    @DisplayName("Get user by username when user exists")
+    public void getByUsername_UserExists_ReturnsUser() {
+        when(userRepository.findByUsername(USER_NAME)).thenReturn(Optional.of(user));
 
-        User receiver = new User();
-        receiver.setId(2L);
-        receiver.setAccount(new Account(2L, 0L, new BigDecimal(100), new BigDecimal(100)));
+        User foundUser = userService.getByUsername(USER_NAME);
 
-        TransferDto transferDto = new TransferDto(BigDecimal.valueOf(50), 2L);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(receiver));
-
-        userService.transfer(1L, transferDto);
-
-        verify(userRepository, times(1)).saveAll(anyList());
+        assertNotNull(foundUser);
+        assertEquals(USER_NAME, foundUser.getUsername());
+        verify(userRepository, times(1)).findByUsername(USER_NAME);
     }
 
     @Test
-    void testTransferInsufficientFunds() {
-        User sender = new User();
-        sender.setId(1L);
-        sender.setAccount(new Account(1L, 0L, new BigDecimal(20), new BigDecimal(20)));
+    @DisplayName("Get user by username when user does not exist")
+    public void getByUsername_UserDoesNotExist_ThrowsException() {
+        when(userRepository.findByUsername(USER_NAME)).thenReturn(Optional.empty());
 
-        User receiver = new User();
-        receiver.setId(2L);
-        receiver.setAccount(new Account(2L, 0L, new BigDecimal(100), new BigDecimal(100)));
+        assertThrows(ResourceNotFoundException.class, () -> userService.getByUsername(USER_NAME));
 
-        TransferDto transferDto = new TransferDto(BigDecimal.valueOf(50), 2L);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(receiver));
-
-        assertThrows(InsufficientFundsException.class,
-                () -> userService.transfer(1L, transferDto));
+        verify(userRepository, times(1)).findByUsername(USER_NAME);
     }
 
     @Test
-    void testTransferUserNotFound() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+    @DisplayName("Get user by ID when user exists")
+    public void getById_UserExists_ReturnsUser() {
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        TransferDto transferDto = new TransferDto(BigDecimal.valueOf(50), 2L);
+        User foundUser = userService.getById(USER_ID);
 
-        assertThrows(ResourceNotFoundException.class,
-                () -> userService.transfer(1L, transferDto));
+        assertNotNull(foundUser);
+        assertEquals(USER_ID, foundUser.getId());
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Get user by ID when user does not exist")
+    public void getById_UserDoesNotExist_ThrowsException() {
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.getById(USER_ID));
+
+        verify(userRepository, times(1)).findById(USER_ID);
     }
 }

@@ -10,11 +10,11 @@ spring:
     change-log: classpath:liquibase/db.changelog.yaml
     enabled: true
     default-schema: public
-#  jpa:
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   data:
     web:
       pageable:
@@ -27,7 +27,8 @@ spring:
 security:
   jwt:
     secret: Y3NkY3NkY3NkbGNtY3NkbGNzZGNkZ3Z4YXNmeGE1c3Rqd3hxdzd4aDdoeA==
-    access: 5 # 5 hours
+    access: 1 # hours
+    refresh: 1 # days
 
 springdoc:
   override-with-generic-response: false

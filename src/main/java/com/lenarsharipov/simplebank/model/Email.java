@@ -1,19 +1,23 @@
 package com.lenarsharipov.simplebank.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.envers.Audited;
+
+import java.io.Serializable;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @Builder
 @Entity
-public class Email {
+@Audited
+public class Email
+        extends BaseEntity
+        implements Serializable {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

@@ -2,51 +2,47 @@ package com.lenarsharipov.simplebank.service.search;
 
 import com.lenarsharipov.simplebank.model.*;
 import jakarta.persistence.criteria.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 
-@AllArgsConstructor
 @Builder
-@Getter
-@Setter
-public class UserSpecification implements Specification<User> {
-
-    private final String phone;
-    private final String fullName;
-    private final String email;
-    private final LocalDate birthDate;
+@Data
+public class ClientSpecification implements Specification<Client> {
+    private String phone;
+    private String fullName;
+    private String email;
+    private LocalDate birthDate;
 
     @Override
-    public Predicate toPredicate(Root<User> root,
-                                 CriteriaQuery<?> query,
+    public Predicate toPredicate(@NonNull Root<Client> root,
+                                 @NonNull CriteriaQuery<?> query,
                                  CriteriaBuilder criteriaBuilder) {
         Predicate predicate = criteriaBuilder.conjunction();
         if (phone != null && !phone.isEmpty()) {
-            Join<User, Phone> phoneJoin = root.join(User_.PHONES, JoinType.INNER);
+            Join<Client, Phone> phoneJoin = root.join("phones", JoinType.INNER);
             predicate = criteriaBuilder.and(
                     predicate,
-                    criteriaBuilder.equal(phoneJoin.get(Phone_.NUMBER), phone));
+                    criteriaBuilder.equal(phoneJoin.get("number"), phone));
         }
         if (fullName != null && !fullName.isEmpty()) {
             predicate = criteriaBuilder.and(
                     predicate,
-                    criteriaBuilder.like(root.get(User_.FULL_NAME), fullName + "%"));
+                    criteriaBuilder.like(root.get("fullName"), fullName + "%"));
         }
         if (email != null && !email.isEmpty()) {
-            Join<User, Email> emailJoin = root.join(User_.EMAILS, JoinType.INNER);
+            Join<Client, Email> emailJoin = root.join("emails", JoinType.INNER);
             predicate = criteriaBuilder.and(
                     predicate,
-                    criteriaBuilder.equal(emailJoin.get(Email_.ADDRESS), email));
+                    criteriaBuilder.equal(emailJoin.get("address"), email));
         }
         if (birthDate != null) {
             predicate = criteriaBuilder.and(
                     predicate,
-                    criteriaBuilder.greaterThan(root.get(User_.BIRTH_DATE), birthDate));
+                    criteriaBuilder.greaterThan(root.get("birth_date"), birthDate));
         }
         return predicate;
     }

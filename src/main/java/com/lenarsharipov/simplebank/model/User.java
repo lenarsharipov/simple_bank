@@ -2,45 +2,30 @@ package com.lenarsharipov.simplebank.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString(exclude = {"emails", "phones"})
-@EqualsAndHashCode(exclude = {"emails", "phones"})
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @Entity
 @Table(name = "users")
-public class User {
+@Audited
+public class User
+        extends BaseEntity
+        implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
 
     private String password;
 
-    private String fullName;
-
-    private LocalDate birthDate;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    private Account account;
-
-    @Builder.Default
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<Email> emails = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<Phone> phones = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

@@ -2,10 +2,10 @@ package com.lenarsharipov.simplebank.controller;
 
 import com.lenarsharipov.simplebank.dto.auth.JwtRequestDto;
 import com.lenarsharipov.simplebank.dto.auth.JwtResponseDto;
-import com.lenarsharipov.simplebank.dto.user.CreateUserDto;
-import com.lenarsharipov.simplebank.dto.user.CreatedUserDto;
+import com.lenarsharipov.simplebank.dto.client.CreateClientDto;
+import com.lenarsharipov.simplebank.dto.client.CreatedClientDto;
 import com.lenarsharipov.simplebank.service.AuthService;
-import com.lenarsharipov.simplebank.service.UserService;
+import com.lenarsharipov.simplebank.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,18 +21,24 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserService userService;
+    private final ClientService clientService;
 
     @PostMapping("/register")
     @ResponseStatus(CREATED)
-    @Operation(summary = "Register new user with unique username, email, phone")
-    public CreatedUserDto register(@Valid @RequestBody CreateUserDto dto) {
-        return userService.create(dto);
+    @Operation(summary = "Register new client with unique username, email, phone")
+    public CreatedClientDto register(@Valid @RequestBody CreateClientDto dto) {
+        return clientService.create(dto);
     }
 
     @PostMapping("/login")
     @Operation(summary = "Log in by username and password")
     public JwtResponseDto login(@Valid @RequestBody JwtRequestDto dto) {
         return authService.login(dto);
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "Refresh by username and password")
+    public JwtResponseDto refresh(@RequestBody String refreshToken) {
+        return authService.refresh(refreshToken);
     }
 }

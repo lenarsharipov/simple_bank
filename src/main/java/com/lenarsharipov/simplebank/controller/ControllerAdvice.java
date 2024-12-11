@@ -1,5 +1,6 @@
-package com.lenarsharipov.simplebank.exception;
+package com.lenarsharipov.simplebank.controller;
 
+import com.lenarsharipov.simplebank.exception.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;

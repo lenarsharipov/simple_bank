@@ -1,13 +1,10 @@
 package com.lenarsharipov.simplebank.dto.auth;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
 
-@Getter
-@Setter
-public class JwtResponseDto {
-
-    private Long id;
-    private String username;
-    private String accessToken;
+@Builder
+public record JwtResponseDto(Long id,
+                             String username,
+                             String accessToken,
+                             String refreshToken) {
 }
